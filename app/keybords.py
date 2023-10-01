@@ -8,11 +8,9 @@ main_kb = ReplyKeyboardMarkup(
         ],
         [
             KeyboardButton(text='Статистика 📈'),
-            KeyboardButton(text='Помогать Автором 🖤')
-        ],
-        [
-            KeyboardButton(text='Помощь 📌'),
+            KeyboardButton(text='Помощь 📌')
         ]
+
     ],
     resize_keyboard=True,
     input_field_placeholder='выберите элемент ниже'

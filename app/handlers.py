@@ -7,7 +7,21 @@ task_lists = {}
 
 @router.message(F.text == '/start')
 async def cmd_start(message: Message):
-    await message.answer('Добро пожаловать', reply_markup=main)
+    await message.answer("""
+    👋 Добро пожаловать в @MyTasksManager_bot!
+
+✨ Мы рады приветствовать вас здесь. @MyTasksManager_bot - это ваш дружелюбный и универсальный бот-спутник, созданный, чтобы сделать ваш опыт в Telegram еще лучше. Будь то организация задач, получение информации, развлечения или просто общение, у нас есть все необходимое!
+
+🚀 Основные функции:
+
+✅ Управление задачами: Создавайте и управляйте задачами с легкостью. 📅✏️
+
+
+🤖 Открытый исходный код: @MyTasksManager_bot - это проект с открытым исходным кодом, и вы можете внести свой вклад в его развитие на GitHub. 🐙🛠️
+https://github.com/Fxyexe/TaskTelgramBot
+
+🎉 Начнем!
+Для начала использования @MyTasksManager_bot просто введите /start или исследуйте наши команды, введя /help. Если у вас есть вопросы или нужна помощь, просто отправьте нам сообщение. Мы здесь, чтобы сделать ваш опыт в Telegram более приятным и удобным. Наслаждайтесь общением с @MyTasksManager_bot! 🎈🤖""", reply_markup=main)
 
 @router.message(F.text == 'Список задач 📃')
 async def cmd_taskList(message: Message):
@@ -133,6 +147,39 @@ async def cmd_help(message: Message):
 Давайте вместе организуемся! 😊
 """
     await message.answer(help_text)
+
+@router.message((F.text == '/completed_tasks') | (F.text == 'Выполнение задачи ✅'))
+async def cmd_completed_tasks(message: Message):
+    user_id = message.from_user.id
+    if user_id in task_lists and task_lists[user_id]:
+        completed_task_list = [task for task, done in task_lists[user_id] if done]
+
+        if completed_task_list:
+            completed_tasks_text = "\n".join([f"✅ {task}" for task in completed_task_list])
+            await message.answer(f'Выполненные задачи:\n{completed_tasks_text}')
+        else:
+            await message.answer('У вас нет выполненных задач.')
+    else:
+        await message.answer('У вас нет созданных списков задач.')
+
+
+@router.message((F.text == '/statistics') | (F.text == 'Статистика 📈'))
+async def cmd_statistics(message: Message):
+    user_id = message.from_user.id
+    if user_id in task_lists and task_lists[user_id]:
+        total_tasks = len(task_lists[user_id])
+        completed_tasks = sum(1 for _, done in task_lists[user_id] if done)
+        incomplete_tasks = total_tasks - completed_tasks
+
+        statistics_text = f"Статистика задач:\n" \
+                          f"Всего задач: {total_tasks}\n" \
+                          f"Выполнено: {completed_tasks}\n" \
+                          f"Осталось: {incomplete_tasks}"
+
+        await message.answer(statistics_text)
+    else:
+        await message.answer('У вас нет задач для отображения статистики.')
+
 
 @router.message(lambda message: not message.text.startswith('/'))
 async def cmd_invalid(message: Message):
